@@ -23,20 +23,7 @@ function App() {
   }
   
   
-  // const completeTodo = (todo) => {
-  //   const newTodoArray = []; 
-  //   todoList.map ((id) => {
-  //     newTodoArray.push = todo.id === id ? {...todo, isCompleted: true} : todo;
-
-  //     return (
-  //       setTodoList ([...newTodoArray])
-  //     );
-      
-  //   })
-
-  // }
-
-  // suggested change
+  
   const completeTodo = (id) => {
     const updatedTodoList = todoList.map (todo => 
       todo.id === id ? {...todo, isCompleted: true} : todo
