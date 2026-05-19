@@ -1,5 +1,5 @@
-import TodoForm from './TodoForm.jsx';
-import TodoList from './TodoList.jsx';
+import TodoForm from './features/TodoForm.jsx';
+import TodoList from './features/TodoList/TodoList.jsx';
 import './App.css'
 import { useState } from 'react';
 
@@ -23,18 +23,26 @@ function App() {
   }
   
   
-  const completeTodo = (todo) => {
-    const newTodoArray = []; 
-    todoList.map ((id) => {
-      newTodoArray.push = todo.id === id ? {...todo, isCompleted: true} : todo;
+  // const completeTodo = (todo) => {
+  //   const newTodoArray = []; 
+  //   todoList.map ((id) => {
+  //     newTodoArray.push = todo.id === id ? {...todo, isCompleted: true} : todo;
 
-      return (
-        setTodoList ([...newTodoArray])
-      );
+  //     return (
+  //       setTodoList ([...newTodoArray])
+  //     );
       
-    })
+  //   })
 
-  }
+  // }
+
+  // suggested change
+  const completeTodo = (id) => {
+    const updatedTodoList = todoList.map (todo => 
+      todo.id === id ? {...todo, isCompleted: true} : todo
+    );
+    setTodoList (updatedTodoList);
+  };
 
   return (
     <div>
