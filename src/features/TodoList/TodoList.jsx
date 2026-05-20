@@ -1,7 +1,7 @@
 import TodoListItem from './TodoListItem.jsx';
 //import isValidTodoTitle from '/src/utils/todoValidation.js';
 
-function TodoList ({todoList, onCompleteTodo, isValidTodoTitle}) {
+function TodoList ({todoList, onCompleteTodo, onUpdateTodo}) {
     
     
     const filteredTodoList =
@@ -15,7 +15,7 @@ function TodoList ({todoList, onCompleteTodo, isValidTodoTitle}) {
             filteredTodoList.length === 0 ? (<p>Add Todo above to get started</p>) : (
                 <ul>
                     {filteredTodoList.map(item =>
-                        (<TodoListItem key={item.id} todo={item} onCompleteTodo={onCompleteTodo} onUpdateTodo={isValidTodoTitle} />))}
+                        (<TodoListItem key={item.id} todo={item} onCompleteTodo={onCompleteTodo} onUpdateTodo={onUpdateTodo} />))}
                 </ul>)
         
         
