@@ -7,6 +7,7 @@ import isValidTodoTitle from '../utils/todoValidation.js';
 function TodoForm ({onAddTodo}) {
     const inputRef = useRef(null);
     const [workingTodoTitle, setWorkingTodoTitle] = useState("");
+    
 
     const handleAddTodo = (event) => {
         event.preventDefault();
