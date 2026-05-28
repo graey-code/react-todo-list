@@ -9,21 +9,20 @@ function TodosPage ({token}) {
 
    
     // create an async function inside a useEffect hook
-    useEffect ((token)=>{
+    useEffect (()=>{
       const fetchTodos = async () => {
         setIsTodoListLoading(true);
         try {
           const response = await fetch ("/api/tasks", {
             method: "GET",
             headers: {"X-CSRF-TOKEN": token},
-            credentials: "include",
-            body: JSON.stringify ()
+            credentials: "include"
 
           });
           const data = await response.json();
           if (response.status === 200) {
 
-                setTodoList(data.tasks.title);
+                setTodoList(data.tasks);
           } else if (response.status === 401) {
             throw new Error(`Unauthorized: ${response.status}`);
 
@@ -39,7 +38,7 @@ function TodosPage ({token}) {
       if (token) {
       fetchTodos();
       }
-    }, [todoList]);
+    }, [token]);
   
 
 
@@ -89,7 +88,8 @@ function TodosPage ({token}) {
           method: "PATCH",
           headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": token},
           credentials: "include",
-          body: JSON.stringify ({isCompleted: true})
+          body: JSON.stringify ({isCompleted: true}),
+          createdAt: originalTodo.createdAt
 
         });
         if (!response.ok) {
@@ -115,7 +115,8 @@ function TodosPage ({token}) {
           method: "PATCH",
           headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": token},
           credentials: "include",
-          body: JSON.stringify ({title: editedTodo.title, isCompleted: editedTodo.isCompleted})
+          body: JSON.stringify ({title: editedTodo.title, isCompleted: editedTodo.isCompleted}),
+          createdAt: originalTodo.createdAt
 
         });
         if (!response.ok) {

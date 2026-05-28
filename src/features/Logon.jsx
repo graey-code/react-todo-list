@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-function Logon ({onSetEmail, onSetToken}) {
+function Logon ({onSetEmail = () => {}, onSetToken = () => {}}) {
 
     
 
@@ -39,21 +39,23 @@ function Logon ({onSetEmail, onSetToken}) {
     return (
         <>
         <form onSubmit={handleSubmit}>
-            {authError && <p>Error</p>}
-            <label htmlFor={email}>Email </label>
+            {authError && <p>{authError}</p>}
+            <label htmlFor="email">Email </label>
             <input
               type="email"
               id={email}
-              setEmail={setEmail}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
             />
-            <label htmlFor={password}> Password </label>
+            <label htmlFor="password"> Password </label>
             <input
               type="text"
               id={password}
-              setPassword={setPassword}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
             />
             <button type="submit" >
-                {isLoggingOn ? "Logging on..." : "Logged on"}
+                {isLoggingOn ? "Logging in..." : "Log on"}
 
             </button>
 
