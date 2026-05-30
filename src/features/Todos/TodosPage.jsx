@@ -88,7 +88,7 @@ function TodosPage ({token}) {
           method: "PATCH",
           headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": token},
           credentials: "include",
-          body: JSON.stringify ({isCompleted: true}),
+          body: JSON.stringify ({isCompleted: true, createdAt: originalTodo.createdAt}),
           createdAt: originalTodo.createdAt
 
         });
@@ -115,7 +115,7 @@ function TodosPage ({token}) {
           method: "PATCH",
           headers: {"Content-Type": "application/json", "X-CSRF-TOKEN": token},
           credentials: "include",
-          body: JSON.stringify ({title: editedTodo.title, isCompleted: editedTodo.isCompleted}),
+          body: JSON.stringify ({title: editedTodo.title, isCompleted: editedTodo.isCompleted, createdAt: originalTodo.createdAt}),
           createdAt: originalTodo.createdAt
 
         });

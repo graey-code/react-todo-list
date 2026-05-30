@@ -8,7 +8,7 @@ function TodoList ({todoList, onCompleteTodo, onUpdateTodo}) {
         todoList.filter ((todo) => !todo.isCompleted); 
 
     
-    console.log(todoList);
+    //console.log(todoList);
     
     return (
         

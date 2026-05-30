@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-function Logon ({onSetEmail = () => {}, onSetToken = () => {}}) {
+function Logon ({onSetEmail, onSetToken}) {
 
     
 
@@ -9,7 +9,7 @@ function Logon ({onSetEmail = () => {}, onSetToken = () => {}}) {
     const [authError, setAuthError] = useState("");
     const [isLoggingOn, setIsLoggingOn] = useState(false);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (event) => {
 
         event.preventDefault();
         setIsLoggingOn(true);
@@ -43,18 +43,18 @@ function Logon ({onSetEmail = () => {}, onSetToken = () => {}}) {
             <label htmlFor="email">Email </label>
             <input
               type="email"
-              id={email}
+              id="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
             <label htmlFor="password"> Password </label>
             <input
-              type="text"
-              id={password}
+              type="password"
+              id="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
-            <button type="submit" >
+            <button type="submit" disabled={isLoggingOn} >
                 {isLoggingOn ? "Logging in..." : "Log on"}
 
             </button>
