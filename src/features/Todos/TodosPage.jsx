@@ -1,7 +1,8 @@
 import TodoForm from '/src/features/Todos/TodoForm.jsx';
 import TodoList from '/src/features/Todos/TodoList/TodoList.jsx';
-import SortedBy from '/src/shared/SortBy.jsx';
+import SortBy from '/src/shared/SortBy.jsx';
 import useDebounce from '/src/utils/useDebounce.js';
+import FilterInput from '/src/shared/FilterInput.jsx';
 import { useState, useEffect, useCallback } from 'react';
 
 function TodosPage ({token}) {
@@ -17,8 +18,7 @@ function TodosPage ({token}) {
 
     const invalidateCache = useCallback (()=> {
       setDataVersion(prev => prev +1);
-      console.log("Invalidating memo cache after todo mutation.");
-
+      
     }, []);
 
     const handleFilterChange = (newTerm) => {
@@ -181,9 +181,9 @@ function TodosPage ({token}) {
       )}
       {filterError && (
         <div>
-          <p>Filter Error</p>
+          <p>{filterError}</p>
           <button
-            onClick={setFilterError('')}
+            onClick={() => setFilterError('')}
           >
             Clear Filter Error
 
@@ -205,8 +205,10 @@ function TodosPage ({token}) {
       
       {isTodoListLoading && <p>Loading Todos...</p>}
       
-      <SortedBy sortBy={sortBy} sortDirection={sortDirection} onSortByChange={setSortBy} onSortDirectionChange={setSortDirection} />
+      <SortBy sortBy={sortBy} sortDirection={sortDirection} onSortByChange={setSortBy} onSortDirectionChange={setSortDirection} />
+      <p class="spaced-text"></p>
       <FilterInput filterTerm={filterTerm} onFilterChange={handleFilterChange}/>
+      <p class="spaced-text"></p>
       <TodoForm onAddTodo={addTodo}/>
       <TodoList todoList={todoList} dataVersion={dataVersion} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} />
       

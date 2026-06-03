@@ -1,50 +1,48 @@
-import React, {Select} from "react";
-//import Select from "react-dropdown-select";
 
-export default function SortedBy ({sortBy, sortDirection, onSortByChange, onSortDirectionChange}) {
+export default function SortBy ({sortBy, sortDirection, onSortByChange, onSortDirectionChange}) {
     
-    const optionOne = [
-        {label: "Creation Date", value: "creationDate"},
-        {label: "Title", value: "title"}
-    ]
+    // const optionOne = [
+    //     {label: "Creation Date", value: "creationDate"},
+    //     {label: "Title", value: "title"}
+    // ]
 
-    const optionTwo = [
-        {label: "Descending", value: "desc"},
-        {label: "Ascending", value: "asc"}
-    ]
+    // const optionTwo = [
+    //     {label: "Descending", value: "desc"},
+    //     {label: "Ascending", value: "asc"}
+    // ]
 
     const handleChangeOne = (e) => onSortByChange(e.target.value);
     const handleChangeTwo = (e) => onSortDirectionChange(e.target.value);
 
     return (
-        <div className="d-flex justify-content-center mt-5">
-            <label htmlFor="Sort_By" >
-                Sort By...
-
-            </label>
-            <Select
+        <div>
+            <label htmlFor="Sort_By" >Sort By: </label>
+            <select
               id="Sort_By"
               value={sortBy}
-              options={optionOne}
+              
               onChange={handleChangeOne}
             >
+                <option value="creationDate">Creation Date</option>
+                <option value="title">Title</option>
             
-            </Select>
+            </select>
             
-            <label htmlFor="Order" >
-                Order...
-
-            </label>
-            <Select
+            <label htmlFor="Order" > Order: </label>
+            <select
               id="Order"
               value={sortDirection}
-              options={optionTwo}
+              
               onChange={handleChangeTwo}
             >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
 
-            </Select>
-
+            </select>
+            
         </div>
     )
 }
 
+// options={optionOne}
+// options={optionTwo}

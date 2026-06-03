@@ -16,12 +16,12 @@ function TodoList ({todoList, onCompleteTodo, onUpdateTodo, dataVersion}) {
     }, [todoList, dataVersion]);
 
     
-    // Use filteredTodoList.todos instead of todoList in your JSX rendering???
+    
     return (
         
-            filteredTodoList.length === 0 ? (<p>Add Todo above to get started</p>) : (
+            filteredTodoList.todos.length === 0 ? (<p>Add Todo above to get started</p>) : (
                 <ul>
-                    {filteredTodoList.map(item =>
+                    {filteredTodoList.todos.map(item =>
                         (<TodoListItem key={item.id} todo={item} onCompleteTodo={onCompleteTodo} onUpdateTodo={onUpdateTodo} />))}
                 </ul>)
         
