@@ -18,6 +18,7 @@ function TodosPage ({token}) {
 
     const invalidateCache = useCallback (()=> {
       setDataVersion(prev => prev +1);
+      console.log("Invalidating memo cache after todo mutation.")
       
     }, []);
 
@@ -189,12 +190,12 @@ function TodosPage ({token}) {
 
           </button>
           <button
-            onClick={
+            onClick={()=> {
               setFilterTerm(''),
               setSortBy('creationDate'),
               setSortDirection('desc'),
               setFilterError('')
-            }
+            }}
           >
             Reset Filters
 
