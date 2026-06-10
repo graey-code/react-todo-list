@@ -5,6 +5,7 @@ export const TODO_ACTIONS = {
     FETCH_START: 'FETCH_START',
     FETCH_SUCCESS: 'FETCH_SUCCESS',
     FETCH_ERROR: 'FETCH_ERROR',
+    FETCH_END: 'FETCH_END',
 
     // Todo mutations
     ADD_TODO_START: 'ADD_TODO_START',
@@ -78,8 +79,22 @@ export function todoReducer (state, action) {
                 ...state,
                 error: action.type,
                 filterError: '',
+                isTodoListLoading: false
                 
 
+            };
+
+        // Fetch End
+
+        case TODO_ACTIONS.FETCH_END:
+
+            
+            //setIsTodoListLoading(false);
+
+            return {
+                ...state,
+                isTodoListLoading: false
+            
             };
         
         // ADD TODO START
@@ -89,7 +104,7 @@ export function todoReducer (state, action) {
 
             return {
                 ...state,
-                todoList: ((prev) => [action.payload, ...prev]),
+                todoList: action.payload,
                 isTodoListLoading: false,
                 error: '',
                 filterError: '',
@@ -105,7 +120,7 @@ export function todoReducer (state, action) {
             return {
                 ...state,
                 todoList: action.payload,
-                isTodoListLoading: false,
+                //isTodoListLoading: false,
                 error: '',
                 filterError: '',
 
@@ -168,8 +183,8 @@ export function todoReducer (state, action) {
             return {
                 ...state,
                 // isTodoListLoading: false,
-                sortBy: 'creationDate',
-                sortDirection: 'desc',
+                sortBy: action.type,
+                sortDirection: action.type,
                 // error: '',
                 // filterError: '',
 
@@ -210,7 +225,7 @@ export function todoReducer (state, action) {
                 ...state,
                 //isTodoListLoading: false,
                 //error: '',
-                filterError: '',
+                filterError: action.type,
 
             };
 
@@ -223,7 +238,7 @@ export function todoReducer (state, action) {
                 ...state,
                 //isTodoListLoading: false,
                 //error: '',
-                dataVersion: (prev => prev +1),
+                dataVersion: action.payload,
                 filterError: '',
 
             };

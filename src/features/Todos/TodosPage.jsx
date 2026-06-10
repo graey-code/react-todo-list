@@ -40,7 +40,7 @@ function TodosPage ({token}) {
 
     const invalidateCache = useCallback (()=> {
       // setDataVersion(prev => prev +1);
-      dispatch({type: TODO_ACTIONS.SET_VERSION})
+      dispatch({type: TODO_ACTIONS.SET_VERSION, payload: (prev => prev +1)})
       // Do I get rid of this or leave it here?
       console.log("Invalidating memo cache after todo mutation.")
       
@@ -81,7 +81,7 @@ function TodosPage ({token}) {
                 // setFilterError('');
                 dispatch({
                   type: TODO_ACTIONS.FETCH_SUCCESS,
-                  payload: {data},
+                  payload: data.tasks,
                 });
           } else if (response.status === 401) {
             throw new Error(`Unauthorized: ${response.status}`);
@@ -93,7 +93,7 @@ function TodosPage ({token}) {
           if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
             //setFilterError(`Error filtering/sorting todos: ${error.message}`);
             dispatch({
-                  type: TODO_ACTIONS.FETCH_ERROR,
+                  type: TODO_ACTIONS.RESET_FILTERS,
                   payload: {
                     message: `Error filtering/sorting todos: ${error.message}`},
                 });
@@ -108,13 +108,7 @@ function TodosPage ({token}) {
           }
         } finally {
           // setIsTodoListLoading(false);
-          dispatch({
-                  type: TODO_ACTIONS.FETCH_ERROR,
-                  payload:{
-                    error: '',
-                    isTodoListLoading: false,
-                  }
-                });
+          dispatch({type: TODO_ACTIONS.FETCH_END });
           
         }
       }
@@ -136,7 +130,7 @@ function TodosPage ({token}) {
       //setTodoList((prev) => [newTodo, ...prev]);
       dispatch({
                   type: TODO_ACTIONS.ADD_TODO_START,
-                  payload: {newTodo},
+                  payload: ((prev) => [newTodo, ...prev]),
                 });
 
       try {
@@ -151,11 +145,11 @@ function TodosPage ({token}) {
           throw new Error(response.message || "Failed to add Todo");
         }
         const newTodoData = await response.json();
-        const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === newTodo.id ? newTodoData : todo));
+        //const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === newTodo.id ? newTodoData : todo));
         // possible issue with calling an await function into the dispatch
         dispatch({
                   type: TODO_ACTIONS.ADD_TODO_SUCCESS,
-                  payload: {setTodoList},
+                  payload: ((updatedTodoList) => updatedTodoList.map(todo => todo.id === newTodo.id ? newTodoData : todo)),
                 });
 
         invalidateCache();
@@ -218,13 +212,15 @@ function TodosPage ({token}) {
     // updateTodo
     const updateTodo = async (editedTodo) => {
       const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
-      const updatedTodos = todoList.map (todo =>
-        todo.id === editedTodo.id ? {...editedTodo}: todo
-      );
+      // const updatedTodos = todoList.map (todo =>
+      //   todo.id === editedTodo.id ? {...editedTodo}: todo
+      // );
       // setTodoList (updatedTodos);
       dispatch({
                   type: TODO_ACTIONS.UPDATE_TODO,
-                  payload: {updatedTodos},
+                  payload: todoList.map (todo =>
+        todo.id === editedTodo.id ? {...editedTodo}: todo
+      ),
                 });
       
 
@@ -274,8 +270,8 @@ function TodosPage ({token}) {
           <button
             onClick={()=> {
               dispatch({type: TODO_ACTIONS.SET_FILTER, payload: ''}),
-              dispatch({type: TODO_ACTIONS.SET_SORT}),
-              dispatch({type: TODO_ACTIONS.RESET_FILTERS})
+              dispatch({type: TODO_ACTIONS.SET_SORT, payload:{sortBy: 'creationDate', sortDirection: 'desc'}}),
+              dispatch({type: TODO_ACTIONS.RESET_FILTERS, payload: ''})
             }}
           >
             Reset Filters
