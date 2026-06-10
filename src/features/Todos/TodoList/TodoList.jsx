@@ -1,11 +1,12 @@
 import {useMemo} from 'react';
 import TodoListItem from './TodoListItem.jsx';
-//import isValidTodoTitle from '/src/utils/todoValidation.js';
+// import isValidTodoTitle from '/src/utils/todoValidation.js';
 
 function TodoList ({todoList, onCompleteTodo, onUpdateTodo, dataVersion}) {
     
     
     const filteredTodoList = useMemo (()=> {
+        console.log(todoList);
         const todos = todoList.filter ((todo) => !todo.isCompleted);
         const version = dataVersion;
         //console.log(`Recalculating filtered todos (v${dataVersion})`);

@@ -21,7 +21,7 @@ function TodosPage ({token}) {
     // const [dataVersion, setDataVersion] = useState (0);
     // const [filterError, setFilterError] = useState("");
 
-    const debouncedFilterTerm = useDebounce(filterTerm, 300);
+    
     
     const [state, dispatch] = useReducer(todoReducer, initialTodoState);
     const {
@@ -34,6 +34,8 @@ function TodosPage ({token}) {
       filterTerm,
       dataVersion,
     } = state;
+
+    const debouncedFilterTerm = useDebounce(filterTerm, 300);
 
 
     const invalidateCache = useCallback (()=> {
@@ -292,9 +294,9 @@ function TodosPage ({token}) {
         type: TODO_ACTIONS.SET_SORT,
         payload: {sortDirection: newSortDirection, sortBy},
       })} />
-      <p class="spaced-text"></p>
+      <p className='spaced-text'></p>
       <FilterInput filterTerm={filterTerm} onFilterChange={handleFilterChange}/>
-      <p class="spaced-text"></p>
+      <p className='spaced-text'></p>
       <TodoForm onAddTodo={addTodo}/>
       <TodoList todoList={todoList} dataVersion={dataVersion} onCompleteTodo={completeTodo} onUpdateTodo={updateTodo} />
       
