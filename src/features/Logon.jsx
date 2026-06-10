@@ -40,14 +40,14 @@ function Logon ({onSetEmail, onSetToken}) {
         <>
         <form onSubmit={handleSubmit}>
             {authError && <p>{authError}</p>}
-            <label htmlFor="email">Email </label>
+            <label htmlFor="email">Email: </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
-            <label htmlFor="password"> Password </label>
+            <label htmlFor="password"> Password: </label>
             <input
               type="password"
               id="password"
