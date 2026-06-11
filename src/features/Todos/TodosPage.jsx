@@ -39,8 +39,8 @@ function TodosPage ({token}) {
 
 
     const invalidateCache = useCallback (()=> {
-      // setDataVersion(prev => prev +1);
-      dispatch({type: TODO_ACTIONS.SET_VERSION, payload: (prev => prev +1)})
+      const setDataVersion = (prev => prev +1);
+      dispatch({type: TODO_ACTIONS.SET_VERSION, payload: setDataVersion})
       // Do I get rid of this or leave it here?
       console.log("Invalidating memo cache after todo mutation.")
       
@@ -48,7 +48,7 @@ function TodosPage ({token}) {
 
     const handleFilterChange = (newTerm) => {
       // setFilterTerm(newTerm);
-      dispatch({type: TODO_ACTIONS.SET_FILTER, payload: {newTerm}})
+      dispatch({type: TODO_ACTIONS.SET_FILTER, payload: newTerm})
 
     };
 
@@ -130,7 +130,7 @@ function TodosPage ({token}) {
       //setTodoList((prev) => [newTodo, ...prev]);
       dispatch({
                   type: TODO_ACTIONS.ADD_TODO_START,
-                  payload: ((prev) => [newTodo, ...prev]),
+                  payload:(prev) => [newTodo, ...prev],
                 });
 
       try {
@@ -178,7 +178,7 @@ function TodosPage ({token}) {
       );
       // setTodoList (updatedTodoList);
       dispatch({
-                  type: TODO_ACTIONS.COMPLETE_TODO,
+                  type: TODO_ACTIONS.COMPLETE_TODO_START,
                   payload: {updatedTodoList},
                 });
       
@@ -201,8 +201,12 @@ function TodosPage ({token}) {
         const setError = (`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
         const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === id ? originalTodo : todo));
         dispatch({
-                  type: TODO_ACTIONS.ADD_TODO_SUCCESS,
-                  payload: {todoList: setTodoList, error: setError},
+                  type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
+                  payload:  setError,
+                });
+        dispatch({
+                  type: TODO_ACTIONS.COMPLETE_TODO_SUCCESS,
+                  payload:  setTodoList,
                 });
         
       }

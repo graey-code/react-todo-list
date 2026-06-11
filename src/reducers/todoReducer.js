@@ -13,7 +13,9 @@ export const TODO_ACTIONS = {
     ADD_TODO_ERROR: 'ADD_TODO_ERROR',
 
     // Similar patters
-    COMPLETE_TODO: 'COMPLETE_TODO',
+    COMPLETE_TODO_START: 'COMPLETE_TODO_START',
+    COMPLETE_TODO_SUCCESS: 'COMPLETE_TODO_SUCCESS',
+    COMPLETE_TODO_ERROR: 'COMPLETE_TODO_ERROR',
     UPDATE_TODO: 'UPDATE_TODO',
 
     // UI operations
@@ -39,6 +41,7 @@ export const initialTodoState = {
 };
 
 export function todoReducer (state, action) {
+    console.log('Dispatched Action: ', action.type, action.payload);
     switch (action.type) {
         // Add cases here
 
@@ -47,7 +50,7 @@ export function todoReducer (state, action) {
                                            
             return {
                 ...state,
-                isTodoListLoading: false,
+                isTodoListLoading: true,
                 error: '',
                 filterError: '',
 
@@ -77,15 +80,15 @@ export function todoReducer (state, action) {
 
             return {
                 ...state,
-                error: action.type,
+                error: action.payload.message,
                 filterError: '',
                 isTodoListLoading: false
                 
 
             };
 
-        // Fetch End
 
+        // Fetch End
         case TODO_ACTIONS.FETCH_END:
 
             
@@ -141,19 +144,48 @@ export function todoReducer (state, action) {
 
             };
 
-        // COMPLETE TODO
-        case TODO_ACTIONS.COMPLETE_TODO:
+        // COMPLETE TODO START
+        case TODO_ACTIONS.COMPLETE_TODO_START:
             
             // setTodoList (updatedTodoList);
-            // setError(`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
+            
+
+            return {
+                ...state,
+                //isTodoListLoading: false,
+                todoList: action.payload,
+                error: '',
+                filterError: '',
+
+            };
+
+        // COMPLETE TODO SUCCESS
+        case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
+            
+            
             // setTodoList((updatedTodoList) => updatedTodoList.map(todo => todo.id === id ? originalTodo : todo));
 
             return {
                 ...state,
-                isTodoListLoading: false,
+                //isTodoListLoading: false,
                 todoList: action.payload,
-                error: '',
-                filterError: '',
+                //error: '',
+                //filterError: '',
+
+            };
+
+        // COMPLETE TODO ERROR
+        case TODO_ACTIONS.COMPLETE_TODO_ERROR:
+            
+            
+            // setError(`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
+            
+            return {
+                ...state,
+                // isTodoListLoading: false,
+                // todoList: action.payload,
+                error: action.payload,
+                //filterError: '',
 
             };
 
@@ -183,8 +215,8 @@ export function todoReducer (state, action) {
             return {
                 ...state,
                 // isTodoListLoading: false,
-                sortBy: action.type,
-                sortDirection: action.type,
+                sortBy: action.payload.sortBy,
+                sortDirection: action.payload.sortDirection,
                 // error: '',
                 // filterError: '',
 
