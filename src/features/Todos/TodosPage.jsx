@@ -3,7 +3,7 @@ import TodoList from '/src/features/Todos/TodoList/TodoList.jsx';
 import SortBy from '/src/shared/SortBy.jsx';
 import useDebounce from '/src/utils/useDebounce.js';
 import FilterInput from '/src/shared/FilterInput.jsx';
-import { useEffect, useCallback, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import {
   todoReducer,
   initialTodoState,
@@ -38,17 +38,17 @@ function TodosPage ({token}) {
     const debouncedFilterTerm = useDebounce(filterTerm, 300);
 
 
-    const invalidateCache = useCallback (()=> {
-      // setDataVersion(prev => prev +1);
-      dispatch({type: TODO_ACTIONS.SET_VERSION})
+    // const invalidateCache = useCallback (()=> {
+    //   const setDataVersion = (prev => prev +1);
+    //  dispatch({type: TODO_ACTIONS.SET_VERSION})
       // Do I get rid of this or leave it here?
       console.log("Invalidating memo cache after todo mutation.")
       
-    }, []);
+    // }, []);
 
     const handleFilterChange = (newTerm) => {
       // setFilterTerm(newTerm);
-      dispatch({type: TODO_ACTIONS.SET_FILTER, payload: {newTerm}})
+      dispatch({type: TODO_ACTIONS.SET_FILTER, payload: newTerm})
 
     };
 
@@ -81,7 +81,7 @@ function TodosPage ({token}) {
                 // setFilterError('');
                 dispatch({
                   type: TODO_ACTIONS.FETCH_SUCCESS,
-                  payload: {data},
+                  payload: data.tasks,
                 });
           } else if (response.status === 401) {
             throw new Error(`Unauthorized: ${response.status}`);
@@ -90,31 +90,25 @@ function TodosPage ({token}) {
            throw new Error(`Response Status: ${response.status}`);
           }
         } catch (error) {
-          if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
-            //setFilterError(`Error filtering/sorting todos: ${error.message}`);
-            dispatch({
+          // if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
+          //   //setFilterError(`Error filtering/sorting todos: ${error.message}`);
+          // } else {
+          //   //setError(`Error fetching todos: ${error.message}`);
+          //   dispatch({
+          //         type: TODO_ACTIONS.FETCH_ERROR,
+          //         payload: {
+          //           message: `Error fetching todos: ${error.message}`
+          //         },
+          //       });
+
+           dispatch({
                   type: TODO_ACTIONS.FETCH_ERROR,
-                  payload: {
-                    message: `Error filtering/sorting todos: ${error.message}`},
+                  payload: {debouncedFilterTerm, sortBy, sortDirection, error} 
                 });
-          } else {
-            //setError(`Error fetching todos: ${error.message}`);
-            dispatch({
-                  type: TODO_ACTIONS.FETCH_ERROR,
-                  payload: {
-                    message: `Error fetching todos: ${error.message}`
-                  },
-                });
-          }
+          
         } finally {
           // setIsTodoListLoading(false);
-          dispatch({
-                  type: TODO_ACTIONS.FETCH_ERROR,
-                  payload:{
-                    error: '',
-                    isTodoListLoading: false,
-                  }
-                });
+          dispatch({type: TODO_ACTIONS.FETCH_END });
           
         }
       }
@@ -136,7 +130,7 @@ function TodosPage ({token}) {
       //setTodoList((prev) => [newTodo, ...prev]);
       dispatch({
                   type: TODO_ACTIONS.ADD_TODO_START,
-                  payload: {newTodo},
+                  payload: newTodo,
                 });
 
       try {
@@ -151,14 +145,14 @@ function TodosPage ({token}) {
           throw new Error(response.message || "Failed to add Todo");
         }
         const newTodoData = await response.json();
-        const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === newTodo.id ? newTodoData : todo));
+        //const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === newTodo.id ? newTodoData : todo));
         // possible issue with calling an await function into the dispatch
         dispatch({
                   type: TODO_ACTIONS.ADD_TODO_SUCCESS,
-                  payload: {setTodoList},
+                  payload: {newTodo, newTodoData},
                 });
 
-        invalidateCache();
+        // invalidateCache();
 
       } catch (error) {
         //setError(`Error adding Todo: ${newTodo.title}, The Error Message: ${error.message}`);
@@ -166,7 +160,7 @@ function TodosPage ({token}) {
         dispatch({
                   type: TODO_ACTIONS.ADD_TODO_ERROR,
                   payload: {
-                    message: `Error adding Todo: ${newTodo.title}, The Error Message: ${error.message}`,
+                    message: `Error adding Todo: ${newTodo.title} | The Error Message: ${error.message}`,
                     newTodo,
                   },
                 });
@@ -179,13 +173,13 @@ function TodosPage ({token}) {
   // completeTodo  
     const completeTodo = async (id) => {
       const originalTodo = todoList.find((todo) => todo.id === id);
-      const updatedTodoList = todoList.map (todo => 
-        todo.id === id ? {...todo, isCompleted: true} : todo
-      );
+      // const updatedTodoList = todoList.map (todo => 
+      //   todo.id === id ? {...todo, isCompleted: true} : todo
+      //);
       // setTodoList (updatedTodoList);
       dispatch({
-                  type: TODO_ACTIONS.COMPLETE_TODO,
-                  payload: {updatedTodoList},
+                  type: TODO_ACTIONS.COMPLETE_TODO_START,
+                  payload: id,
                 });
       
       try{
@@ -201,16 +195,19 @@ function TodosPage ({token}) {
         if (!response.ok) {
           throw new Error(response.message || "Failed Todo");
         }
-        invalidateCache();
+        // invalidateCache();
+
+        dispatch({type: TODO_ACTIONS.COMPLETE_TODO_SUCCESS});
 
       } catch (error) {
-        const setError = (`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
-        const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === id ? originalTodo : todo));
+        //const setError = (`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
+        //const setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === id ? originalTodo : todo));
         dispatch({
-                  type: TODO_ACTIONS.ADD_TODO_SUCCESS,
-                  payload: {todoList: setTodoList, error: setError},
+                  type: TODO_ACTIONS.COMPLETE_TODO_ERROR,
+                  payload:  {message: `Error completing Todo: ${originalTodo.title} | The Error Message: ${error.message}`,
+                  id, originalTodo},
                 });
-        
+                
       }
     };
 
@@ -218,13 +215,12 @@ function TodosPage ({token}) {
     // updateTodo
     const updateTodo = async (editedTodo) => {
       const originalTodo = todoList.find((todo) => todo.id === editedTodo.id);
-      const updatedTodos = todoList.map (todo =>
-        todo.id === editedTodo.id ? {...editedTodo}: todo
-      );
+      // const updatedTodos = todoList.map (todo =>
+      //   todo.id === editedTodo.id ? {...editedTodo}: todo);
       // setTodoList (updatedTodos);
       dispatch({
-                  type: TODO_ACTIONS.UPDATE_TODO,
-                  payload: {updatedTodos},
+                  type: TODO_ACTIONS.UPDATE_TODO_START,
+                  payload: editedTodo,
                 });
       
 
@@ -240,14 +236,16 @@ function TodosPage ({token}) {
         if (!response.ok) {
           throw new Error(response.message || "Failed to update Todo");
         }
-        invalidateCache();
+        
+        //invalidateCache();
+        dispatch({type: TODO_ACTIONS.UPDATE_TODO_SUCCESS});
 
       } catch (error) {
-        const setError = (`Error updating Todo: ${editedTodo.title} || Error Message: ${error.message}`);
-        const setTodoList = ((updatedTodos) => updatedTodos.map(todo => todo.id === editedTodo.id ? originalTodo : todo));
+        // const setError = (`Error updating Todo: ${editedTodo.title} || Error Message: ${error.message}`);
+        // const setTodoList = ((updatedTodos) => updatedTodos.map(todo => todo.id === editedTodo.id ? originalTodo : todo));
         dispatch({
                   type: TODO_ACTIONS.UPDATE_TODO,
-                  payload: {todoList: setTodoList, error: setError},
+                  payload: {message: `Error updating Todo: ${editedTodo.title} || Error Message: ${error.message}`, editedTodo, originalTodo},
                 });
 
       }
@@ -274,8 +272,8 @@ function TodosPage ({token}) {
           <button
             onClick={()=> {
               dispatch({type: TODO_ACTIONS.SET_FILTER, payload: ''}),
-              dispatch({type: TODO_ACTIONS.SET_SORT}),
-              dispatch({type: TODO_ACTIONS.RESET_FILTERS})
+              dispatch({type: TODO_ACTIONS.SET_SORT, payload:{sortBy: 'creationDate', sortDirection: 'desc'}}),
+              dispatch({type: TODO_ACTIONS.RESET_FILTERS, payload: ''})
             }}
           >
             Reset Filters

@@ -5,15 +5,22 @@ export const TODO_ACTIONS = {
     FETCH_START: 'FETCH_START',
     FETCH_SUCCESS: 'FETCH_SUCCESS',
     FETCH_ERROR: 'FETCH_ERROR',
+    FETCH_END: 'FETCH_END',
 
     // Todo mutations
     ADD_TODO_START: 'ADD_TODO_START',
     ADD_TODO_SUCCESS: 'ADD_TODO_SUCCESS',
     ADD_TODO_ERROR: 'ADD_TODO_ERROR',
 
-    // Similar patters
-    COMPLETE_TODO: 'COMPLETE_TODO',
-    UPDATE_TODO: 'UPDATE_TODO',
+    // Complete TODOs
+    COMPLETE_TODO_START: 'COMPLETE_TODO_START',
+    COMPLETE_TODO_SUCCESS: 'COMPLETE_TODO_SUCCESS',
+    COMPLETE_TODO_ERROR: 'COMPLETE_TODO_ERROR',
+
+    // Update TODOs
+    UPDATE_TODO_START: 'UPDATE_TODO_START',
+    UPDATE_TODO_SUCCESS: 'UPDATE_TODO_SUCCESS',
+    UPDATE_TODO_ERROR: 'UPDATE_TODO_ERROR',
 
     // UI operations
     SET_SORT: 'SET_SORT',
@@ -38,6 +45,7 @@ export const initialTodoState = {
 };
 
 export function todoReducer (state, action) {
+    console.log('Dispatched Action: ', action.type, action.payload);
     switch (action.type) {
         // Add cases here
 
@@ -46,7 +54,7 @@ export function todoReducer (state, action) {
                                            
             return {
                 ...state,
-                isTodoListLoading: false,
+                isTodoListLoading: true,
                 error: '',
                 filterError: '',
 
@@ -61,25 +69,44 @@ export function todoReducer (state, action) {
         
             return {
                 ...state,
-                todoList: action.payload,
-                error: '',
-                filterError: '',
-
+                todoList: action.payload.todoList,
+                isTodoListLoading: false,
+                
             };
 
         // FETCH ERROR
-        case TODO_ACTIONS.FETCH_ERROR:
+        case TODO_ACTIONS.FETCH_ERROR: {
+            const {debouncedFilterTerm, sortBy, sortDirection, error} = action.payload;
 
-            // setError(`Error fetching todos: ${error.message}`);
-            //setFilterError(`Error filtering/sorting todos: ${error.message}`);
+            if (debouncedFilterTerm || sortBy !== 'creationDate' || sortDirection !== 'desc') {
+                return {
+                ...state,
+                isTodoListLoading: false,
+                filterError: `Error filtering/sorting todos: ${error.message}`,
+                };
+            
+            
+          } else {
+            return {
+                ...state,
+                isTodoListLoading: false,
+                error: `Error fetching todos: ${error.message}`,
+                };
+            
+            };
+        }
+
+
+        // Fetch End
+        case TODO_ACTIONS.FETCH_END:
+
+            
             //setIsTodoListLoading(false);
 
             return {
                 ...state,
-                error: action.type,
-                filterError: '',
-                
-
+                isTodoListLoading: false
+            
             };
         
         // ADD TODO START
@@ -89,11 +116,10 @@ export function todoReducer (state, action) {
 
             return {
                 ...state,
-                todoList: ((prev) => [action.payload, ...prev]),
+                todoList: [action.payload.newTodo, ...state.todoList],
                 isTodoListLoading: false,
                 error: '',
-                filterError: '',
-
+                
             };
 
         // ADD TODO SUCCESS
@@ -104,11 +130,9 @@ export function todoReducer (state, action) {
 
             return {
                 ...state,
-                todoList: action.payload,
-                isTodoListLoading: false,
-                error: '',
-                filterError: '',
-
+                todoList: state.updatedTodoList.map(todo => todo.id === action.payload.newTodo.id ? action.payload.newTodoData : todo),
+                dataVersion: state.dataVersion + 1,
+                
             };
 
         // ADD TODO ERROR
@@ -120,43 +144,85 @@ export function todoReducer (state, action) {
             return {
                 ...state,
                 isTodoListLoading: false,
-                todoList: ((updatedTodoList) => updatedTodoList.filter(todo => todo.id !== action.payload.id)),
-                error: '',
-                filterError: '',
-
+                todoList: state.updatedTodoList.filter(todo => todo.id !== action.payload.id),
+                error: action.payload.message,
+                
             };
 
-        // COMPLETE TODO
-        case TODO_ACTIONS.COMPLETE_TODO:
+        // COMPLETE TODO START
+        case TODO_ACTIONS.COMPLETE_TODO_START:
             
             // setTodoList (updatedTodoList);
-            // setError(`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
-            // setTodoList((updatedTodoList) => updatedTodoList.map(todo => todo.id === id ? originalTodo : todo));
-
+            // const updatedTodoList = todoList.map (todo => 
+            // todo.id === id ? {...todo, isCompleted: true} : todo
             return {
                 ...state,
-                isTodoListLoading: false,
-                todoList: action.payload,
+                todoList: state.todoList.map (todo => todo.id === action.payload.id ? {...todo, isCompleted: true} : todo),
                 error: '',
-                filterError: '',
-
+                
             };
 
-        // UPDATE TODO
-        case TODO_ACTIONS.UPDATE_TODO: 
+        // COMPLETE TODO SUCCESS
+        case TODO_ACTIONS.COMPLETE_TODO_SUCCESS:
+                                    
+            // invalidateCache();
+        
+            return {
+                ...state,
+                dataVersion: state.dataVersion + 1,
+                
+            };
 
-            // setTodoList (updatedTodos);
-            // setError(`Error updating Todo: ${editedTodo.title} || Error Message: ${error.message}`);
-            // setTodoList((updatedTodos) => updatedTodos.map(todo => todo.id === editedTodo.id ? originalTodo : todo))
-     
+        // COMPLETE TODO ERROR
+        case TODO_ACTIONS.COMPLETE_TODO_ERROR:
+            
+            // setTodoList = ((updatedTodoList) => updatedTodoList.map(todo => todo.id === id ? originalTodo : todo));
+            // setError(`Error completing Todo: ${originalTodo.title}, The Error Message: ${error.message}`);
             
             return {
                 ...state,
-                isTodoListLoading: false,
-                todoList: action.payload,
-                error: '',
-                filterError: '',
+                error: action.payload.message,
+                todoList: state.updatedTodoList.map(todo => todo.id === action.payload.id ? action.payload.originalTodo : todo),
+            
+            };
 
+        // UPDATE TODO Start
+        case TODO_ACTIONS.UPDATE_TODO_START: 
+
+            // const updatedTodos = todoList.map (todo =>
+            //   todo.id === editedTodo.id ? {...editedTodo}: todo);
+            // setTodoList (updatedTodos);
+                 
+            return {
+                ...state,
+                todoList: state.todoList.map (todo =>
+                todo.id === action.payload.editedTodo.id ? {...action.payload.editedTodo}: todo),
+                error: '',
+                
+            };
+
+        // UPDATE TODO Success
+        case TODO_ACTIONS.UPDATE_TODO_SUCCESS: 
+
+            // invalidateCache();     
+            
+            return {
+                ...state,
+                dataVersion: state.dataVersion + 1,
+                
+            };
+
+        // UPDATE TODO Error
+        case TODO_ACTIONS.UPDATE_TODO_ERROR: 
+
+            // setError = (`Error updating Todo: ${editedTodo.title} || Error Message: ${error.message}`);
+            // setTodoList = ((updatedTodos) => updatedTodos.map(todo => todo.id === editedTodo.id ? originalTodo : todo));
+     
+            return {
+                ...state,
+                todoList: state.updatedTodos.map(todo => todo.id === action.payload.editedTodo.id ? action.payload.originalTodo : todo),
+                error: action.payload.message,
+                
             };
 
         // SET SORT
@@ -168,8 +234,8 @@ export function todoReducer (state, action) {
             return {
                 ...state,
                 // isTodoListLoading: false,
-                sortBy: 'creationDate',
-                sortDirection: 'desc',
+                sortBy: action.payload.sortBy,
+                sortDirection: action.payload.sortDirection,
                 // error: '',
                 // filterError: '',
 
@@ -210,7 +276,7 @@ export function todoReducer (state, action) {
                 ...state,
                 //isTodoListLoading: false,
                 //error: '',
-                filterError: '',
+                filterError: action.type,
 
             };
 
@@ -221,11 +287,8 @@ export function todoReducer (state, action) {
 
             return {
                 ...state,
-                //isTodoListLoading: false,
-                //error: '',
-                dataVersion: (prev => prev +1),
-                filterError: '',
-
+                dataVersion: state.dataVersion + 1,
+                
             };
 
 
