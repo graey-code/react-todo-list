@@ -5,7 +5,7 @@ const AuthContext = createContext();
 export function useAuth () {
     const context = useContext(AuthContext);
     if (!context) {
-        throw new Error ('useAuth must be used with an AuthProvider');
+        throw new Error('useAuth must be used with an AuthProvider');
     }
     return context;
 }
@@ -45,7 +45,7 @@ export function AuthProvider ({children}) {
         } catch(error) {
             return {
                 success: false,
-                error: 'Network error during login',
+                error: `Network error during login: ${error.message}`,
             };
         }
 
@@ -87,7 +87,7 @@ export function AuthProvider ({children}) {
         } catch(error) {
             return {
                 success: false,
-                error: 'Network error during logout',
+                error: `Network error during logout:, ${error.message}`,
             };
         }
 
